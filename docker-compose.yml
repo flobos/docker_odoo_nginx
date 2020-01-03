@@ -1,0 +1,30 @@
+version: '2'
+services:
+  db:
+    image: postgres:9.5
+    container_name: db
+    environment:
+      - POSTGRES_PASSWORD=odoo
+      - POSTGRES_USER=odoo
+    volumes:
+      - odoo-db-data:/var/lib/postgresql/data/pgdata
+    restart: always           
+
+  odoo11:
+    image: odoo:11.0
+    container_name: odoo
+    depends_on:
+      - db
+    ports:
+      - "8069:8069"
+    tty: true
+    command: -- --dev=reload --proxy-mode
+#    command: odoo scaffold /mnt/extra-addons/test_module
+    volumes:
+      - odoo-web-data:/var/lib/odoo
+      - /opt/odoo/addons:/mnt/extra-addons
+      - /opt/odoo/config:/etc/odoo
+    restart: always            
+volumes:
+  odoo-web-data:
+  odoo-db-data:
